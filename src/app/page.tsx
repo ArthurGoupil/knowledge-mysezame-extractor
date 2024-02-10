@@ -36,7 +36,7 @@ async function getDocx(id: number) {
 }
 
 async function login(password: string) {
-  const res = await fetch("/api/lodgin", {
+  const res = await fetch("/api/login", {
     method: "POST",
     body: JSON.stringify({ password }),
   });
@@ -71,7 +71,7 @@ export default function Home() {
 
   return !isAllowed ? (
     <div>
-      <div className={styles.loginContainer}>
+      <form className={styles.loginContainer}>
         <input
           type="password"
           className={styles.input}
@@ -82,7 +82,7 @@ export default function Home() {
         <button className={styles.button} onClick={() => handleLogin(password)}>
           Se connecter
         </button>
-      </div>
+      </form>
       <div className={styles.container}>
         {(isAllowed === false && !isLoading) ||
           (error && (
@@ -143,7 +143,7 @@ const Connected = () => {
     <main className={styles.main}>
       <Image src="/logo.png" alt="logo" width={200} height={50} />
       <h3 className={styles.title}>Knowledge management DOCX extractor</h3>
-      <div className={styles.inputContainer}>
+      <form className={styles.inputContainer}>
         <input
           type="text"
           className={styles.input}
@@ -159,7 +159,7 @@ const Connected = () => {
             Fiche sélectionnée : <b>{selectedItem.name}</b>
           </div>
         )}
-      </div>
+      </form>
       {error && <div className={styles.error}>{error}</div>}
       {isLoading && !error && <div className={styles.loader} />}
       {!isLoading &&
