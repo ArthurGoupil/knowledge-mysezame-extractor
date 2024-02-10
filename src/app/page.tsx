@@ -1,7 +1,7 @@
 "use client";
 
 import styles from "./page.module.css";
-import { useMemo, useState } from "react";
+import { FormEvent, FormEventHandler, useMemo, useState } from "react";
 import debounce from "lodash.debounce";
 import { saveAs } from "file-saver";
 import Image from "next/image";
@@ -56,8 +56,9 @@ export default function Home() {
   const [error, setError] = useState<string | undefined>();
   const [isAllowed, setIsAllowed] = useState<boolean | undefined>();
 
-  const handleLogin = async (password: string) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     try {
+      e.preventDefault();
       setError(undefined);
       setIsLoading(true);
       const isAllowed = await login(password);
@@ -71,7 +72,7 @@ export default function Home() {
 
   return !isAllowed ? (
     <div>
-      <form className={styles.loginContainer}>
+      <form className={styles.loginContainer} onSubmit={handleSubmit}>
         <input
           type="password"
           className={styles.input}
@@ -79,7 +80,7 @@ export default function Home() {
           onChange={(e) => setPassword(e.target.value)}
           placeholder="Entrez le mot de passe"
         />
-        <button className={styles.button} onClick={() => handleLogin(password)}>
+        <button type="submit" className={styles.button}>
           Se connecter
         </button>
       </form>

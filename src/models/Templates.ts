@@ -82,8 +82,6 @@ export const decodeTemplateFormElement = async (
 ): Promise<DecodedTemplateFormElement | undefined> => {
   switch (formElement.name) {
     case "v-my-select": {
-      console.log("v-my-select");
-
       if (Array.isArray(contentValue)) {
         return {
           type: "content",
@@ -103,8 +101,6 @@ export const decodeTemplateFormElement = async (
     }
 
     case "v-my-label": {
-      console.log("v-my-label");
-
       return {
         type: "heading",
         instructions: formElement.value.instructions,
@@ -113,11 +109,7 @@ export const decodeTemplateFormElement = async (
     }
 
     case "v-my-categories": {
-      console.log("v-my-categories");
-
       const category = await Categories.findByPk(formElement.value.id);
-
-      console.log("🦊 ~ file: Templates.ts:120 ~ category:", category);
 
       if (!category) {
         break;
@@ -145,8 +137,6 @@ export const decodeTemplateFormElement = async (
     }
 
     case "v-my-text": {
-      console.log("v-my-text");
-
       if (typeof contentValue === "string") {
         return {
           type: "content",
@@ -165,8 +155,6 @@ export const decodeTemplateFormElement = async (
     }
 
     case "v-my-textarea": {
-      console.log("v-my-textarea");
-
       if (typeof contentValue === "string") {
         return {
           type: "html",
@@ -180,10 +168,7 @@ export const decodeTemplateFormElement = async (
     }
 
     case "v-my-reference": {
-      console.log("v-my-reference");
-
       if (Array.isArray(contentValue)) {
-        console.log("zhefjzejfzejfzjef", formElement.value.label);
         return {
           type: "link",
           title: formElement.value.label,
