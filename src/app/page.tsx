@@ -85,10 +85,9 @@ export default function Home() {
         </button>
       </form>
       <div className={styles.container}>
-        {(isAllowed === false && !isLoading) ||
-          (error && (
-            <div className={styles.error}>{error ?? "Non autorisé"}</div>
-          ))}
+        {((isAllowed === false && !isLoading) || error) && (
+          <div className={styles.error}>{error ?? "Non autorisé"}</div>
+        )}
         {isLoading && !error && <div>Chargement...</div>}
       </div>
     </div>
