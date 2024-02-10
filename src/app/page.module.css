@@ -73,3 +73,11 @@
 .loginContainer {
   margin: 0 20px;
 }
+
+.notAllowed {
+  color: red;
+}
+
+.container {
+  margin: 20px;
+}

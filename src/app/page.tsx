@@ -39,25 +39,33 @@ async function login(password: string) {
 
 export default function Home() {
   const [password, setPassword] = useState("");
-  const [isAllowed, setIsAllowed] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isAllowed, setIsAllowed] = useState<boolean | undefined>();
 
   const handleLogin = async (password: string) => {
+    setIsLoading(true);
     const isAllowed = await login(password);
-
+    setIsLoading(false);
     setIsAllowed(isAllowed);
   };
 
   return !isAllowed ? (
-    <div className={styles.loginContainer}>
-      <input
-        className={styles.input}
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-        placeholder="Entrez le mot de passe"
-      />
-      <button className={styles.button} onClick={() => handleLogin(password)}>
-        Se connecter
-      </button>
+    <div>
+      <div className={styles.loginContainer}>
+        <input
+          className={styles.input}
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          placeholder="Entrez le mot de passe"
+        />
+        <button className={styles.button} onClick={() => handleLogin(password)}>
+          Se connecter
+        </button>
+      </div>
+      <div className={styles.container}>
+        {isAllowed === false && !isLoading && <div className={styles.notAllowed}>Non autorisé</div>}
+        {isLoading && <div>Chargement...</div>}
+      </div>
     </div>
   ) : (
     <Connected />
