@@ -21,7 +21,7 @@ interface Item {
   deleted_at: Date | null;
 }
 
-@Table({ timestamps: false })
+@Table({ timestamps: false, tableName: "items" })
 export class Items extends Model<Item> {
   @Column
   template_id: string;

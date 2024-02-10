@@ -18,19 +18,32 @@ async function getItems(name: string) {
 
   const res = await fetch(`/api/items?name=${name}`);
 
+  if (!res.ok) {
+    throw new Error("Error while fetching items");
+  }
+
   return res.json() as Promise<Item[]>;
 }
 
 async function getDocx(id: number) {
   const res = await fetch(`/api/docx?id=${id}`);
+
+  if (!res.ok) {
+    throw new Error("Error while fetching docx");
+  }
+
   return res.blob();
 }
 
 async function login(password: string) {
-  const res = await fetch("/api/login", {
+  const res = await fetch("/api/lodgin", {
     method: "POST",
     body: JSON.stringify({ password }),
   });
+
+  if (!res.ok) {
+    throw new Error("Error while logging in");
+  }
 
   const response = await res.json();
 
@@ -40,19 +53,27 @@ async function login(password: string) {
 export default function Home() {
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | undefined>();
   const [isAllowed, setIsAllowed] = useState<boolean | undefined>();
 
   const handleLogin = async (password: string) => {
-    setIsLoading(true);
-    const isAllowed = await login(password);
-    setIsLoading(false);
-    setIsAllowed(isAllowed);
+    try {
+      setError(undefined);
+      setIsLoading(true);
+      const isAllowed = await login(password);
+      setIsAllowed(isAllowed);
+    } catch (error) {
+      setError("Une erreur est survenue: " + error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return !isAllowed ? (
     <div>
       <div className={styles.loginContainer}>
         <input
+          type="password"
           className={styles.input}
           value={password}
           onChange={(e) => setPassword(e.target.value)}
@@ -63,8 +84,11 @@ export default function Home() {
         </button>
       </div>
       <div className={styles.container}>
-        {isAllowed === false && !isLoading && <div className={styles.notAllowed}>Non autorisé</div>}
-        {isLoading && <div>Chargement...</div>}
+        {(isAllowed === false && !isLoading) ||
+          (error && (
+            <div className={styles.error}>{error ?? "Non autorisé"}</div>
+          ))}
+        {isLoading && !error && <div>Chargement...</div>}
       </div>
     </div>
   ) : (
@@ -80,26 +104,39 @@ const Connected = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isHtmlLoading, setIsHtmlLoading] = useState(false);
   const [file, setFile] = useState<Blob>();
+  const [error, setError] = useState<string | undefined>();
 
   const handleGetItems = useMemo(
     () =>
       debounce(async (e: React.ChangeEvent<HTMLInputElement>) => {
-        setFile(undefined);
-        setSelectedItem(null);
-        setIsLoading(true);
-        const data = await getItems(e.target.value);
-        setIsLoading(false);
-        setItems(data);
-        setShowItems(true);
+        try {
+          setError(undefined);
+          setFile(undefined);
+          setSelectedItem(null);
+          setIsLoading(true);
+          const data = await getItems(e.target.value);
+          setItems(data);
+          setShowItems(true);
+        } catch (error) {
+          setError("Une erreur est survenue: " + error);
+        } finally {
+          setIsLoading(false);
+        }
       }, 500),
     []
   );
 
   const handleGetHtml = async (id: number) => {
-    setIsHtmlLoading(true);
-    const blob = await getDocx(id);
-    setFile(blob);
-    setIsHtmlLoading(false);
+    try {
+      setError(undefined);
+      setIsHtmlLoading(true);
+      const blob = await getDocx(id);
+      setFile(blob);
+    } catch (error) {
+      setError("Une erreur est survenue: " + error);
+    } finally {
+      setIsHtmlLoading(false);
+    }
   };
 
   return (
@@ -123,7 +160,8 @@ const Connected = () => {
           </div>
         )}
       </div>
-      {isLoading && <div className={styles.loader} />}
+      {error && <div className={styles.error}>{error}</div>}
+      {isLoading && !error && <div className={styles.loader} />}
       {!isLoading &&
         showItems &&
         items.map((item) => (

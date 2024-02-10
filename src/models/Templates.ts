@@ -35,7 +35,7 @@ type Template = {
   deleted_at: Date;
 };
 
-@Table({ timestamps: false })
+@Table({ timestamps: false, tableName: "templates" })
 export class Templates extends Model<Template> {
   @Column
   name: string;

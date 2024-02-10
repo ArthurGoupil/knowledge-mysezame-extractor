@@ -14,7 +14,7 @@ interface Category {
   updated_at: Date;
 }
 
-@Table({ timestamps: false })
+@Table({ timestamps: false, tableName: "categories" })
 export class Categories extends Model<Category> {
   @Column
   name: string;
