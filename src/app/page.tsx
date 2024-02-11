@@ -11,25 +11,33 @@ type Item = {
   name: string;
 };
 
-async function getItems(name: string) {
+async function getItems(name: string, password: string) {
   if (name.length < 3) {
     return [];
   }
 
-  const res = await fetch(`/api/items?name=${name}`);
+  const res = await fetch(`/api/items?name=${name}`, {
+    headers: {
+      Autorization: "Bearer " + password,
+    },
+  });
 
   if (!res.ok) {
-    throw new Error("Error while fetching items");
+    throw new Error(`Erreur lors du chargement des fiches : ${res.statusText}`);
   }
 
   return res.json() as Promise<Item[]>;
 }
 
-async function getDocx(id: number) {
-  const res = await fetch(`/api/docx?id=${id}`);
+async function getDocx(id: number, password: string) {
+  const res = await fetch(`/api/docx?id=${id}`, {
+    headers: {
+      Autorization: "Bearer " + password,
+    },
+  });
 
   if (!res.ok) {
-    throw new Error("Error while fetching docx");
+    throw new Error(`Erreur lors du chargement du DOCX : ${res.statusText}`);
   }
 
   return res.blob();
@@ -42,7 +50,7 @@ async function login(password: string) {
   });
 
   if (!res.ok) {
-    throw new Error("Error while logging in");
+    throw new Error(`Erreur lors du login : ${res.statusText}`);
   }
 
   const response = await res.json();
@@ -64,7 +72,7 @@ export default function Home() {
       const isAllowed = await login(password);
       setIsAllowed(isAllowed);
     } catch (error) {
-      setError("Une erreur est survenue: " + error);
+      setError(String(error));
     } finally {
       setIsLoading(false);
     }
@@ -90,13 +98,14 @@ export default function Home() {
         )}
         {isLoading && !error && <div>Chargement...</div>}
       </div>
+      <Connected password={password} />
     </div>
   ) : (
-    <Connected />
+    <Connected password={password} />
   );
 }
 
-const Connected = () => {
+const Connected = ({ password }: { password: string }) => {
   const [value, setValue] = useState("");
   const [selectedItem, setSelectedItem] = useState<Item | null>(null);
   const [showItems, setShowItems] = useState(false);
@@ -114,26 +123,26 @@ const Connected = () => {
           setFile(undefined);
           setSelectedItem(null);
           setIsLoading(true);
-          const data = await getItems(e.target.value);
+          const data = await getItems(e.target.value, password);
           setItems(data);
           setShowItems(true);
         } catch (error) {
-          setError("Une erreur est survenue: " + error);
+          setError(String(error));
         } finally {
           setIsLoading(false);
         }
       }, 500),
-    []
+    [password]
   );
 
   const handleGetHtml = async (id: number) => {
     try {
       setError(undefined);
       setIsHtmlLoading(true);
-      const blob = await getDocx(id);
+      const blob = await getDocx(id, password);
       setFile(blob);
     } catch (error) {
-      setError("Une erreur est survenue: " + error);
+      setError(String(error));
     } finally {
       setIsHtmlLoading(false);
     }
