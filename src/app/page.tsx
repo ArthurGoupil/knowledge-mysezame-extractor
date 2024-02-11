@@ -98,7 +98,6 @@ export default function Home() {
         )}
         {isLoading && !error && <div>Chargement...</div>}
       </div>
-      <Connected password={password} />
     </div>
   ) : (
     <Connected password={password} />
